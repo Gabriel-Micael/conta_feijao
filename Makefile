@@ -9,7 +9,7 @@ TARGET=conta-feijao
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS);\
-    $(CC) -g -o $@ ./utils/imagelib.o $^ $(LDFLAGS) 
+    $(CC) -g -o $@ /utils/imagelib.o $^ $(LDFLAGS) 
 
 %.o: %.c %.h;\
     $(CC) $(CCFLAGS) -c $<
