@@ -84,7 +84,7 @@ void label(image In)
 int main(int argc, char *argv[])
 {
     int nc, nr, ml, tp = 2;
-    char *p, nameIn[100], nameOut[100], cmd[110];
+    char nameIn[100], nameOut[100], cmd[110];
     image In, Out;
     //-- define input/output file name
     img_name(argv[1], nameIn, nameOut, tp, tp);
