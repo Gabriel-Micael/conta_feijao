@@ -1,11 +1,11 @@
 /*=============================================================
-*           UNIFAL = Universidade Federal de Alfenas.
-*             BACHARELADO EM CIENCIA DA COMPUTACAO.
-* Trabalho..: Contagem de feijoes
-* Professor.: Luiz Eduardo da Silva
-* Aluno.....: Gabriel Micael Henrique
-* Data......: 20/05/2024
-*=============================================================*/
+ *           UNIFAL = Universidade Federal de Alfenas.
+ *             BACHARELADO EM CIENCIA DA COMPUTACAO.
+ * Trabalho..: Contagem de feijoes
+ * Professor.: Luiz Eduardo da Silva
+ * Aluno.....: Gabriel Micael Henrique
+ * Data......: 20/05/2024
+ *=============================================================*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,18 +13,22 @@
 #include "utils/imagelib.h"
 
 // Função para limiarizar uma imagem PBM
-void limiarizar_pbm(int *In, int *Out, int largura, int altura, int limiar) {
-    for (int i = 0; i < altura * largura; i++){
-            if (In[i] >= limiar) {
-                Out[i] = 1;
-            } else {
-                Out[i] = 0;
-            }
-        printf("Repetição %d", i);
+image limiarizar_pbm(image In, int limiar)
+{
+    image Out = img_clone(In);
+    for (int i = 0; i < In->nc * In->nr; i++)
+    {
+        if (In->px[i] >= limiar)
+        {
+            Out->px[i] = 1;
+        }
+        else
+        {
+            Out->px[i] = 0;
+        }
     }
-    printf("Saiu da repetição");
+    return Out;
 }
-
 
 int find(int parent[], int i)
 {
@@ -33,7 +37,7 @@ int find(int parent[], int i)
     return i;
 }
 
-//função para unir 2 pixels com rótulos diferentes do mesmo objeto em apenas um rótulo
+// função para unir 2 pixels com rótulos diferentes do mesmo objeto em apenas um rótulo
 void Union(int parent[], int i, int j)
 {
     int x = find(parent, i);
@@ -78,26 +82,45 @@ void label(image In)
     In->ml = numLabel;
 }
 
+void msg(char *s)
+{
+    printf("\nLabelling");
+    printf("\n-------------------------------");
+    printf("\nUso:  %s  nome-imagem[.pgm] \n\n", s);
+    printf("    nome-imagem[.pgm] é o nome do arquivo da imagem \n");
+    exit(1);
+}
+
 /*-------------------------------------------------------------------------
  * main function
  *-------------------------------------------------------------------------*/
 int main(int argc, char *argv[])
 {
     int nc, nr, ml, tp = 2;
-    char nameIn[100], nameOut[100], cmd[110];
+    char *p, nameIn[100], nameOut[100], cmd[110];
     image In, Out;
+    if(argc<2){
+        msg(argv[0]);
+    }
     //-- define input/output file name
-    img_name(argv[1], nameIn, nameOut, tp, tp);
+    img_name(argv[1], nameIn, nameOut, tp, 2);
     //-- read image
     In = img_get(nameIn, tp);
     //-- transformation
-    limiarizar_pbm(In->px,Out->px,In->nc,In->nr,50);
+    Out = limiarizar_pbm(In, 90);
     //-- save image
-    img_put(Out, nameOut, tp);
+    img_put(Out, nameOut, 1);
+    
+    printf("Out->ml: %d\n",Out->ml);
+    label(Out);
+    printf("Out->ml: %d\n",Out->ml);
+    for (int i = 0; i < Out->nr * Out->nc; i++){
+        printf("Out[%d][%d]->%d\n",i/Out->nc,i%Out->nc,Out->px[i]);
+    }
 
     //-- show image
-    sprintf(cmd, "%s %s &", VIEW, nameOut);
-    system(cmd);
+    //sprintf(cmd, "%s %s &", VIEW, nameOut);
+    //system(cmd);
     img_free(In);
     img_free(Out);
     return 0;

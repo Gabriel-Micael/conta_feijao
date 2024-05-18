@@ -133,7 +133,7 @@ image img_get(char *name, int tp)
             ERROR(r > ml || r < 0 || g > ml || g < 0 || b > ml || b < 0,
                   errormsg("Max intensity of color in the image error: <%s>", name));
             img->px[i] = (r << 16) + (g << 8) + b;
-        }
+        }        
     fclose(fimg);
     img_info(name, img);
     return img;
