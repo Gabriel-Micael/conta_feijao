@@ -1,7 +1,7 @@
 /*=============================================================
  *           UNIFAL = Universidade Federal de Alfenas.
  *             BACHARELADO EM CIENCIA DA COMPUTACAO.
- * Trabalho..: Contagem de feijoes
+ * Trabalho..: Contador de feijoes
  * Professor.: Luiz Eduardo da Silva
  * Aluno.....: Gabriel Micael Henrique
  * Data......: 20/05/2024
@@ -11,6 +11,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include "utils/imagelib.h"
+
+// bean1.pgm = 41 componentes
+// bean2.pgm = 68 componentes
+// bean3.pgm = 96 componentes
+// bean4.pgm = 123 componentes
+// bean5.pgm = 10 componentes
+// bean6.pgm = 20 componentes
+// bean7.pgm = 30 componentes
+
 
 // Função para limiarizar uma imagem PBM
 image limiarizar_pbm(image In, int limiar)
@@ -45,7 +54,31 @@ void Union(int parent[], int i, int j)
     parent[y] = x;
 }
 
-void label(image In)
+
+int quantidadeRotulos(int *parent, int numLabel)
+{
+    int qtdcomponentes = 0;
+    int pertence;
+    for (int i = 1; i <= numLabel; i++)
+    {
+        pertence = 0;
+        for (int j = 0; j <= numLabel; j++)
+        {
+            if (i == parent[j])
+            {
+                pertence = 1;
+                break;
+            }
+        }
+        if (pertence)
+        {
+            qtdcomponentes++;
+        }
+    }
+    return qtdcomponentes;
+}
+
+int label(image In)
 {
     int nr = In->nr;
     int nc = In->nc;
@@ -80,6 +113,7 @@ void label(image In)
     for (int i = 0; i < nr * nc; i++)
         In->px[i] = find(parent, In->px[i]);
     In->ml = numLabel;
+    return quantidadeRotulos(parent, numLabel);
 }
 
 void msg(char *s)
@@ -96,30 +130,25 @@ void msg(char *s)
  *-------------------------------------------------------------------------*/
 int main(int argc, char *argv[])
 {
-    int nc, nr, ml, tp = 2;
-    char *p, nameIn[100], nameOut[100], cmd[110];
+    int nc, nr, ml, tp = GRAY, quantidadeDeComponentes;
+    char nameIn[100], nameOut[100], cmd[110];
     image In, Out;
     if (argc < 2)
     {
         msg(argv[0]);
     }
-    //-- define input/output file name
-    img_name(argv[1], nameIn, nameOut, GRAY, BW);
-    //-- read image
-    In = img_get(nameIn, GRAY);
-    //-- transformation
-    Out = limiarizar_pbm(In, 100);
-    //-- save image
-    img_put(Out, nameOut, BW);
 
-    // for (int i = 0; i < Out->nr * Out->nc; i++){
-    //     printf("Out[%d][%d]->%d\n",i/Out->nc,i%Out->nc,Out->px[i]);
-    // }
-    label(Out);
-    printf("#componentes= %.2d\n", Out->ml);
-    //-- show image
-    // sprintf(cmd, "%s %s &", VIEW, nameOut);
-    // system(cmd);
+    img_name(argv[1], nameIn, nameOut, tp, tp - 1);
+    //-- read image
+    In = img_get(nameIn, tp);
+    //-- transformation
+    Out = limiarizar_pbm(In, 94);
+    //-- save image
+    img_put(Out, nameOut, tp - 1);
+
+    quantidadeDeComponentes = label(Out);
+    printf("#componentes= %2.0d\n", quantidadeDeComponentes);
+
     img_free(In);
     img_free(Out);
     return 0;
