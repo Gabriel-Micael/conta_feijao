@@ -135,7 +135,7 @@ image img_get(char *name, int tp)
             img->px[i] = (r << 16) + (g << 8) + b;
         }        
     fclose(fimg);
-    img_info(name, img);
+    // img_info(name, img);
     return img;
 }
 

@@ -20,11 +20,11 @@ image limiarizar_pbm(image In, int limiar)
     {
         if (In->px[i] >= limiar)
         {
-            Out->px[i] = 1;
+            Out->px[i] = 0;
         }
         else
         {
-            Out->px[i] = 0;
+            Out->px[i] = 1;
         }
     }
     return Out;
@@ -51,8 +51,8 @@ void label(image In)
     int nc = In->nc;
     int *px = In->px;
     int numLabel = 0;
-    int parent[1000];
-    for (int i = 0; i < 1000; i++)
+    int *parent = (int *)malloc(nc * nr * sizeof(int));
+    for (int i = 0; i < nr * nc; i++)
         parent[i] = i;
     for (int i = 1; i < nr; i++)
         for (int j = 1; j < nc; j++)
@@ -99,28 +99,27 @@ int main(int argc, char *argv[])
     int nc, nr, ml, tp = 2;
     char *p, nameIn[100], nameOut[100], cmd[110];
     image In, Out;
-    if(argc<2){
+    if (argc < 2)
+    {
         msg(argv[0]);
     }
     //-- define input/output file name
-    img_name(argv[1], nameIn, nameOut, tp, 2);
+    img_name(argv[1], nameIn, nameOut, GRAY, BW);
     //-- read image
-    In = img_get(nameIn, tp);
+    In = img_get(nameIn, GRAY);
     //-- transformation
-    Out = limiarizar_pbm(In, 90);
+    Out = limiarizar_pbm(In, 100);
     //-- save image
-    img_put(Out, nameOut, 1);
-    
-    printf("Out->ml: %d\n",Out->ml);
-    label(Out);
-    printf("Out->ml: %d\n",Out->ml);
-    for (int i = 0; i < Out->nr * Out->nc; i++){
-        printf("Out[%d][%d]->%d\n",i/Out->nc,i%Out->nc,Out->px[i]);
-    }
+    img_put(Out, nameOut, BW);
 
+    // for (int i = 0; i < Out->nr * Out->nc; i++){
+    //     printf("Out[%d][%d]->%d\n",i/Out->nc,i%Out->nc,Out->px[i]);
+    // }
+    label(Out);
+    printf("#componentes= %.2d\n", Out->ml);
     //-- show image
-    //sprintf(cmd, "%s %s &", VIEW, nameOut);
-    //system(cmd);
+    // sprintf(cmd, "%s %s &", VIEW, nameOut);
+    // system(cmd);
     img_free(In);
     img_free(Out);
     return 0;
